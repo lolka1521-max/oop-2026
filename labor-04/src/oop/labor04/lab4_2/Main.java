@@ -11,21 +11,24 @@ public class Main {
     public static void main(String[] args) {
 
         ArrayList<Customer> customers = new ArrayList<>();
+        Customer currentCustomer = null;
         try (Scanner scanner = new Scanner(new File("lab4_2_input.csv"))) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (line.isEmpty()) {
                     continue;
                 }
+                String[] temp = line.split(",");
                 if(line.startsWith("Customer")){
                     System.out.println("This is a Custommer");
-                    String[] temp = line.split(",");
                     String temp1 = temp[1].trim();
                     String temp2 = temp[2].trim();
-                    customers.get(customers.size()-1).addAccount();
+                    customers.add(new Customer(temp1, temp2));
                 }
                 else{
-                    System.out.println("This is a BankAccount");
+                    String temp1 = temp[1].trim();
+                    double penz = Double.parseDouble(temp[2].trim());
+                    currentCustomer.addAccount(new BankAccount(penz, temp1));
                 }
             }
         } catch (FileNotFoundException e) {
