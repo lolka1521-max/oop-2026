@@ -2,9 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello World</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szótár Kereső</title>
+    <style>
+        body {
+            background-color: #E8F5E9;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .search-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #008b8b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #006666;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
-Hello World
+
+<div class="search-container">
+    <h2>Szótár Kereső</h2>
+    <input type="text" id="wordInput" placeholder="Írj be egy szót...">
+    <button onclick="searchWord()">Keresés</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function searchWord() {
+        const word = document.getElementById('wordInput').value.trim();
+        const resultDiv = document.getElementById('result');
+
+        if (word === "") {
+            resultDiv.innerHTML = "<span style='color: red;'>Kérlek, írj be egy szót!</span>";
+            return;
+        }
+
+        fetch(`/api/v1/dictionary/${word}`)
+            .then(response => response.text()) // Mivel a kontroller Stringet ad vissza
+            .then(data => {
+                if (data.includes("EXISTS") && !data.includes("DOES NOT")) {
+                    resultDiv.innerHTML = `<span style='color: green;'>${data}</span>`;
+                } else {
+                    resultDiv.innerHTML = `<span style='color: red;'>${data}</span>`;
+                }
+            })
+            .catch(error => {
+                console.error('Hiba történt:', error);
+                resultDiv.innerHTML = "<span style='color: red;'>Hiba történt a szerverrel való kommunikáció során!</span>";
+            });
+    }
+
+    document.getElementById('wordInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            searchWord();
+        }
+    });
+</script>
+
 </body>
 </html>
